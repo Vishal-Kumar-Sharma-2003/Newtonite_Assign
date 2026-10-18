@@ -1,0 +1,14 @@
+services:
+  api:
+    build: .
+    ports: ["8000:8000"]
+    environment: {OPS_DB: /data/ops.db}
+    volumes: ["ops-data:/data"]
+  worker:                       # outbox worker: delivers notification jobs with retries
+    build: .
+    command: ["python", "-m", "app.worker", "--loop"]
+    environment: {OPS_DB: /data/ops.db}
+    volumes: ["ops-data:/data"]
+    depends_on: [api]
+volumes:
+  ops-data:
